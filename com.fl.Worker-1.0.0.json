@@ -1,0 +1,39 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.fl.Worker",
+  "ComponentVersion": "1.0.0",
+  "ComponentPublisher": "Amazon",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      "accessControl": {
+        "aws.greengrass.ipc.mqttproxy": {
+          "com.fl.Worker:mqttproxy:1": {
+            "operations": [
+              "aws.greengrass#SubscribeToIoTCore"
+            ],
+            "resources": [
+              "fl/1223683773/next-round"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "linux"
+      },
+      "Lifecycle": {
+        "install": {
+          "script": "python3 -c 'import awsiotsdk' || pip3 install awsiotsdk",
+          "requiresPrivilege": true
+        },
+        "run": {
+          "script": "sudo -E -u ubuntu python3 -u {artifacts:path}/worker.py",
+          "requiresPrivilege": true
+        }
+      }
+    }
+  ]
+}
