@@ -50,4 +50,5 @@ graph LR
     Lambda -. "Trigger Next Round" .-> MQTT
     MQTT -.-> W1
     MQTT -.-> W2
-    MQTT -.-> Wn```
+    MQTT -.-> Wn
+```
