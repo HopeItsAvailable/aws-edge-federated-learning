@@ -50,4 +50,5 @@ graph LR
     %% MQTT Signals
     MQTT -. "Next Round" .-> W1
     MQTT -. "Next Round" .-> W2
-    MQTT -. "Next Round" .-> Wn```
+    MQTT -. "Next Round" .-> Wn
+```
