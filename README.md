@@ -20,35 +20,34 @@ An AWS Lambda aggregator then calculates the federated average (FedAvg) and orch
 ## System Architecture
 ```mermaid
 graph LR
+    %% Cloud Resources
+    subgraph CLOUD ["☁️ CLOUD"]
+        direction TB
+        Lambda[Aggregator Lambda]
+        S3[(Amazon S3)]
+    end
+
     %% MQTT Broker
     MQTT(((MQTT)))
 
     %% Edge Devices
-    subgraph "EDGE (IoT Greengrass Core Devices)"
+    subgraph EDGE ["🖥️ EDGE (IoT Greengrass Core)"]
+        direction TB
         W1[Worker 0] -.- D1[(local data)]
         W2[Worker 1] -.- D2[(local data)]
         Wn[Worker N] -.- Dn[(local data)]
     end
 
-    %% Cloud Resources
-    subgraph "CLOUD"
-        S3[(Amazon S3)]
-        Lambda[Aggregator Lambda]
-    end
+    %% Internal Cloud Logic
+    S3 <--> |"Read/Write Weights"| Lambda
+    Lambda -. "Trigger" .-> MQTT
 
-    %% Model Transfers
-    S3 -- "Global model" --> W1
-    S3 -- "Global model" --> W2
-    S3 -- "Global model" --> Wn
+    %% S3 to Workers (Consolidated)
+    S3 <--> |"Global & Local Models"| W1
+    S3 <--> |"Global & Local Models"| W2
+    S3 <--> |"Global & Local Models"| Wn
 
-    W1 -- "Local model" --> S3
-    W2 -- "Local model" --> S3
-    Wn -- "Local model" --> S3
-
-    %% Aggregation and Triggers
-    S3 <--> Lambda
-    Lambda -. "Trigger Next Round" .-> MQTT
-    MQTT -.-> W1
-    MQTT -.-> W2
-    MQTT -.-> Wn
-```
+    %% MQTT Signals
+    MQTT -. "Next Round" .-> W1
+    MQTT -. "Next Round" .-> W2
+    MQTT -. "Next Round" .-> Wn```
